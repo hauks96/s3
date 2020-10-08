@@ -36,12 +36,30 @@ Partner section instructor:
 /**********************************************************************
  *  Describe your method for range search in a kd-tree.
  **********************************************************************/
-    The range search is done recursively my
+    The range search is done by recursively checking the left and right
+    sub tree whether they intersect the rectangle given in the argument.
+    If they intersect, we check whether the point is contained within
+    the rectangle and keep the recursion going, otherwise we know we are
+    no longer in range of the rectangle so we return. If we reach a
+    leaf we also return.
+
+    We use a Queue object defined in an outer scope of the recursive call
+    so that we do not need to return anything from the actual recursion.
+    We only need to add(point) to get our new point into the queue.
 
 /**********************************************************************
  *  Describe your method for nearest neighbor search in a kd-tree.
  **********************************************************************/
-
+    1. check distance from current node to query point
+    2. if distance is shorter than current shortest distance then overwrite shortest distance.
+    3. check if it is more likely to be on the left/bottom or right/top
+      3.1 check by comparing the query point and current node x-coordinates if its a
+      vertical node, y-coordinates if its a horizontal node.
+      3.2 if the query point is less than node then go left/down, else go right/top.
+    4. go to the more likely node.
+    5. check if shortest_distance from query point is longer than distance to opposite rectangle.
+    6. if distance is longer, then go to the other direction. If not, go straight to return.
+    7. return shortest_node
 
 
 /**********************************************************************
@@ -55,7 +73,6 @@ Partner section instructor:
  **********************************************************************/
 
 bytes per Point2D: 32 bytes
-
 bytes per RectHV:
 
 bytes per KdTree of N points (using tilde notation):   ~

@@ -71,7 +71,7 @@ public class KdTree {
             createRootRect(1,1,0,0);
             return;
         }
-        recursiveInsert(this.root, p);
+        recursiveInsert(p);
     };
 
     // Creating the two rectangles for the root
@@ -83,8 +83,9 @@ public class KdTree {
         this.root.rect_left = new RectHV(min_x, min_y, this.root.point.x(), max_y);
         this.root.rect_right = new RectHV(this.root.point.x(), min_y, max_x, max_y);
     }
+
     // Insert using the recursive search
-    private void recursiveInsert(Node current_node, Point2D point){
+    private void recursiveInsert(Point2D point){
         Node node = recursiveSearch(this.root, point);
         // Node with this point already exist so we don't do anything and return
         if (node.point.compareTo(point)==0) return;
@@ -253,19 +254,19 @@ public class KdTree {
 
     // all points in the set that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
-        SET<Point2D> points = new SET<Point2D>();
+        Queue<Point2D> points = new Queue<Point2D>();
         recursiveRangeSearch(this.root, rect, points);
         return points;
     }
 
     // Recursively go through the tree and find all nodes that are within the range of a given rectangle
-    private void recursiveRangeSearch(Node current_node, RectHV rect, SET<Point2D> points){
+    private void recursiveRangeSearch(Node current_node, RectHV rect, Queue<Point2D> points){
         // When leaf is reached stop recursion
         if (current_node==null) return;
 
         // If the current node's point is within the rectangle
         if (rect.contains(current_node.point)) {
-            points.add(current_node.point); // Add to queue
+            points.enqueue(current_node.point); // Add to queue
         }
         // Recursively go to left and right sub tree until they are no longer intersecting the rectangle
         if (current_node.rect_left.intersects(rect)){
@@ -284,16 +285,13 @@ public class KdTree {
         return nearest_node.point;
     }
     private Boolean isShorterDistance(Node current_node, Node ret_node, Point2D point){
-        if (ret_node.point.distanceSquaredTo(point)<current_node.point.distanceSquaredTo(point)) return true;
-        return false;
+        return ret_node.point.distanceSquaredTo(point) < current_node.point.distanceSquaredTo(point);
     }
 
     private Node recursiveNearestSearch(Node current_node, Point2D point, double shortest_distance, Node shortest_node){
         // Check distance from current node to query point
         double distance_to_point = current_node.point.distanceSquaredTo(point);
-        if (current_node.point.compareTo(new Point2D(0.714, 0.859))==0 || current_node.point.compareTo(new Point2D(0.706, 0.857))==0){
-            int zeros = 0;
-        }
+
         // If distance is shorter than current shortest distance then overwrite shortest distance.
         if (distance_to_point<shortest_distance){
             shortest_distance = distance_to_point;
@@ -375,7 +373,7 @@ public class KdTree {
         }
         double total_time = time.elapsedTime();
         System.out.println("Total insert time for "+n+" points: " + total_time);
-
+        System.out.println(test.size());
         /*
         // Drawing all squares and points in tree
         test.draw();
@@ -405,6 +403,6 @@ public class KdTree {
         StdDraw.setPenColor(Color.orange);
         Point2D nearest = test.nearest(neighbor_point);
         nearest.draw();
-        */
+         */
     }
 }

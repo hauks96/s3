@@ -3,6 +3,9 @@ package s3;
  *************************************************************************/
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import edu.princeton.cs.algs4.*;
 
 class Node {
@@ -277,7 +280,61 @@ public class KdTree {
 
     // a nearest neighbor in the set to p; null if set is empty
     public Point2D nearest(Point2D p) {
-        return p;
+        Node nearest_node = recursiveNearestSearch(this.root, p, this.root.point.distanceTo(p), this.root);
+        return nearest_node.point;
+    }
+
+    private Node recursiveNearestSearch(Node current_node, Point2D point, double shortest_distance, Node shortest_node){
+        // Check distance from current node to query point
+        double distance_to_point = current_node.point.distanceTo(point);
+
+        // If distance is shorter than current shortest distance then overwrite shortest distance.
+        if (distance_to_point<shortest_distance){
+            shortest_distance = distance_to_point;
+            shortest_node = current_node;
+        }
+        // Check if it is more likely to be on the left/bottom or right/top
+        int direction = current_node.compareTo(point); // If -1 then left, if 1 then right
+
+        // Go to the more likely node.
+        if (direction<0){
+            if (current_node.left_child!=null){
+                shortest_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
+                shortest_distance = shortest_node.point.distanceTo(point);
+            }
+        }
+        else{
+            if (current_node.right_child!=null){
+                shortest_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
+                shortest_distance = shortest_node.point.distanceTo(point);
+            }
+        }
+
+        // Check if shortest_distance from query point is longer than distance to opposite rectangle.
+        double dist_rect;
+        if (direction<0){
+            dist_rect = current_node.rect_right.distanceTo(point);
+
+        }else {
+            dist_rect = current_node.rect_left.distanceTo(point);
+        }
+
+        // If distance is longer, then go to the other direction. If not, go straight to return.
+        if (dist_rect<shortest_distance){
+            if(direction<0){
+                if (current_node.right_child!=null){
+                    shortest_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
+                    shortest_distance = shortest_node.point.distanceTo(point);
+                }
+            }else {
+                if (current_node.left_child!=null){
+                    shortest_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
+                    shortest_distance = shortest_node.point.distanceTo(point);
+                }
+            }
+        }
+        // Distance is shorter -> return
+        return shortest_node;
     }
 
     /*******************************************************************************
@@ -285,6 +342,7 @@ public class KdTree {
      ******************************************************************************/
     public static void main(String[] args) {
         // Custom test
+        StdDraw.setCanvasSize(1000, 1000);
         KdTree test = new KdTree();
         In in = new In();
         int n = in.readInt();
@@ -303,71 +361,24 @@ public class KdTree {
 
         // Checking amount of nodes in tree
         System.out.println(test.size());
-        /*
+
         // Testing range with this test point
         RectHV test_rect = new RectHV(0.15, 0.25, 0.35, 0.6);
+        StdDraw.setPenColor(Color.green);
+        StdDraw.setPenRadius(0.01);
         for (Point2D point: test.range(test_rect)){
-            StdDraw.setPenColor(Color.red);
-            StdDraw.setPenRadius(0.01);
             point.draw();
         }
-        StdDraw.setPenColor(Color.red);
         StdDraw.setPenRadius();
         test_rect.draw();
-        */
 
-        /*
-        In in = new In();
-        Out out = new Out();
-        int nrOfRecangles = in.readInt();
-        int nrOfPointsCont = in.readInt();
-        int nrOfPointsNear = in.readInt();
-        RectHV[] rectangles = new RectHV[nrOfRecangles];
-        Point2D[] pointsCont = new Point2D[nrOfPointsCont];
-        Point2D[] pointsNear = new Point2D[nrOfPointsNear];
-        for (int i = 0; i < nrOfRecangles; i++) {
-            rectangles[i] = new RectHV(in.readDouble(), in.readDouble(),
-                    in.readDouble(), in.readDouble());
-        }
-        for (int i = 0; i < nrOfPointsCont; i++) {
-            pointsCont[i] = new Point2D(in.readDouble(), in.readDouble());
-        }
-        for (int i = 0; i < nrOfPointsNear; i++) {
-            pointsNear[i] = new Point2D(in.readDouble(), in.readDouble());
-        }
-        KdTree set = new KdTree();
-        for (int i = 0; !in.isEmpty(); i++) {
-            double x = in.readDouble(), y = in.readDouble();
-            set.insert(new Point2D(x, y));
-        }
-        for (int i = 0; i < nrOfRecangles; i++) {
-            // Query on rectangle i, sort the result, and print
-            Iterable<Point2D> ptset = set.range(rectangles[i]);
-            int ptcount = 0;
-            for (Point2D p : ptset)
-                ptcount++;
-            Point2D[] ptarr = new Point2D[ptcount];
-            int j = 0;
-            for (Point2D p : ptset) {
-                ptarr[j] = p;
-                j++;
-            }
-            Arrays.sort(ptarr);
-            out.println("Inside rectangle " + (i + 1) + ":");
-            for (j = 0; j < ptcount; j++)
-                out.println(ptarr[j]);
-        }
-        out.println("Contain test:");
-        for (int i = 0; i < nrOfPointsCont; i++) {
-            out.println((i + 1) + ": " + set.contains(pointsCont[i]));
-        }
-
-        out.println("Nearest test:");
-        for (int i = 0; i < nrOfPointsNear; i++) {
-            out.println((i + 1) + ": " + set.nearest(pointsNear[i]));
-        }
-
-        out.println();*/
+        // Testing nearest neighbor
+        Point2D neighbor_point = new Point2D(0.2, 0.23);
+        StdDraw.setPenColor(Color.MAGENTA);
+        StdDraw.setPenRadius(0.02);
+        neighbor_point.draw();
+        StdDraw.setPenColor(Color.orange);
+        Point2D nearest = test.nearest(neighbor_point);
+        nearest.draw();
     }
-
 }

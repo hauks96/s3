@@ -283,13 +283,19 @@ public class KdTree {
         Node nearest_node = recursiveNearestSearch(this.root, p, this.root.point.distanceTo(p), this.root);
         return nearest_node.point;
     }
+    private Boolean isShorterDistance(Node current_node, Node ret_node, Point2D point){
+        if (ret_node.point.distanceSquaredTo(point)<current_node.point.distanceSquaredTo(point)) return true;
+        return false;
+    }
 
     private Node recursiveNearestSearch(Node current_node, Point2D point, double shortest_distance, Node shortest_node){
         // Check distance from current node to query point
-        double distance_to_point = current_node.point.distanceTo(point);
-
+        double distance_to_point = current_node.point.distanceSquaredTo(point);
+        if (current_node.point.compareTo(new Point2D(0.714, 0.859))==0 || current_node.point.compareTo(new Point2D(0.706, 0.857))==0){
+            int zeros = 0;
+        }
         // If distance is shorter than current shortest distance then overwrite shortest distance.
-        if (distance_to_point<=shortest_distance){
+        if (distance_to_point<shortest_distance){
             shortest_distance = distance_to_point;
             shortest_node = current_node;
         }
@@ -299,37 +305,49 @@ public class KdTree {
         // Go to the more likely node.
         if (direction<0){
             if (current_node.left_child!=null){
-                shortest_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
-                shortest_distance = shortest_node.point.distanceTo(point);
+                Node ret_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
+                if (isShorterDistance(current_node, ret_node, point)){
+                    shortest_node = ret_node;
+                    shortest_distance = shortest_node.point.distanceSquaredTo(point);
+                }
             }
         }
         else{
             if (current_node.right_child!=null){
-                shortest_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
-                shortest_distance = shortest_node.point.distanceTo(point);
+                Node ret_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
+                if (isShorterDistance(current_node, ret_node, point)){
+                    shortest_node = ret_node;
+                    shortest_distance = shortest_node.point.distanceSquaredTo(point);
+                }
             }
         }
 
         // Check if shortest_distance from query point is longer than distance to opposite rectangle.
         double dist_rect;
         if (direction<0){
-            dist_rect = current_node.rect_right.distanceTo(point);
+            dist_rect = current_node.rect_right.distanceSquaredTo(point);
 
         }else {
-            dist_rect = current_node.rect_left.distanceTo(point);
+            dist_rect = current_node.rect_left.distanceSquaredTo(point);
         }
 
         // If distance is longer, then go to the other direction. If not, go straight to return.
         if (dist_rect<shortest_distance){
             if(direction<0){
                 if (current_node.right_child!=null){
-                    shortest_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
-                    shortest_distance = shortest_node.point.distanceTo(point);
+                    Node ret_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
+                    if (isShorterDistance(current_node, ret_node, point)){
+                        shortest_node = ret_node;
+                        shortest_distance = shortest_node.point.distanceSquaredTo(point);
+                    }
                 }
             }else {
                 if (current_node.left_child!=null){
-                    shortest_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
-                    shortest_distance = shortest_node.point.distanceTo(point);
+                    Node ret_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
+                    if (isShorterDistance(current_node, ret_node, point)){
+                        shortest_node = ret_node;
+                        shortest_distance = shortest_node.point.distanceSquaredTo(point);
+                    }
                 }
             }
         }
@@ -395,6 +413,9 @@ public class KdTree {
         out.printf("Testing `nearest` method, querying %d points\n", C);
 
         for (int i = 0; i < C; i++) {
+            if (i == 249){
+                int x = 10;
+            }
             queries[i] = new Point2D(in.readDouble(), in.readDouble());
             out.printf("%s: %s\n", queries[i], tree.nearest(queries[i]));
         }
@@ -403,5 +424,18 @@ public class KdTree {
                 tree.nearest(queries[j]);
             }
         }
+        Point2D search_nearest = new Point2D(0.496, 0.171);
+        System.out.println(search_nearest.toString());
+        Point2D my_result = new Point2D(0.492, 0.19);
+        Point2D his_result = new Point2D(0.5, 0.19);
+        System.out.println("My answer: "+search_nearest.distanceTo(my_result));
+        System.out.println("His answer: "+search_nearest.distanceTo(his_result));
+        System.out.println("");
+        search_nearest = new Point2D(0.712, 0.85);
+        System.out.println(search_nearest.toString());
+        my_result = new Point2D(0.714, 0.859);
+        his_result = new Point2D(0.706, 0.857);
+        System.out.println("My answer: "+search_nearest.distanceTo(my_result));
+        System.out.println("His answer: "+search_nearest.distanceTo(his_result));
     }
 }

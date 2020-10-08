@@ -289,7 +289,7 @@ public class KdTree {
         double distance_to_point = current_node.point.distanceTo(point);
 
         // If distance is shorter than current shortest distance then overwrite shortest distance.
-        if (distance_to_point<shortest_distance){
+        if (distance_to_point<=shortest_distance){
             shortest_distance = distance_to_point;
             shortest_node = current_node;
         }
@@ -341,6 +341,7 @@ public class KdTree {
      * Test client
      ******************************************************************************/
     public static void main(String[] args) {
+        /*
         // Custom test
         StdDraw.setCanvasSize(1000, 1000);
         KdTree test = new KdTree();
@@ -380,5 +381,27 @@ public class KdTree {
         StdDraw.setPenColor(Color.orange);
         Point2D nearest = test.nearest(neighbor_point);
         nearest.draw();
+         */
+        In in = new In();
+        Out out = new Out();
+        int N = in.readInt(), C = in.readInt(), T = 50;
+        Point2D[] queries = new Point2D[C];
+        KdTree tree = new KdTree();
+        out.printf("Inserting %d points into tree\n", N);
+        for (int i = 0; i < N; i++) {
+            tree.insert(new Point2D(in.readDouble(), in.readDouble()));
+        }
+        out.printf("tree.size(): %d\n", tree.size());
+        out.printf("Testing `nearest` method, querying %d points\n", C);
+
+        for (int i = 0; i < C; i++) {
+            queries[i] = new Point2D(in.readDouble(), in.readDouble());
+            out.printf("%s: %s\n", queries[i], tree.nearest(queries[i]));
+        }
+        for (int i = 0; i < T; i++) {
+            for (int j = 0; j < C; j++) {
+                tree.nearest(queries[j]);
+            }
+        }
     }
 }

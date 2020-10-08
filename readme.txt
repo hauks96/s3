@@ -3,23 +3,40 @@
  *  Kd-tree
 **********************************************************************/
 
-Name:    
-Login:   
+Name: Ægir Máni Hauksson
+Login: aegir19@ru.is
 Section instructor:
 
-Partner name:     
-Partner login:    
+Partner name: Hákon Hákonarson
+Partner login: hakon19@ru.is
 Partner section instructor:
 
 /**********************************************************************
  *  Describe the Node data type you used to implement the
  *  2d-tree data structure.
  **********************************************************************/
+    The node contains various attributes. One of the fundamental ones
+    being the is_x boolean attribute. This attribute decides which
+    dimension we are comparing at the current level in the tree. The
+    difference can be seen in the compareTo method. On an X level we
+    compare by X, on a Y level we compare by Y.
+
+    Another feature are the left and right rectangles. After a node
+    gets created the node gets assigned two rectangles. These two
+    rectangles describe mainly what area the left or the right of the
+    node contain. The debate with these two attributes could be that
+    they are unnecessary and can be computed when they are needed,
+    but then again that would mean performance loss to some extent
+    making it a question between performance and space saving.
+
+    Apart from these two attributes, and the compareTo method the node
+    is a very normal binary search tree node with a parent and one child
+    on either side.
 
 /**********************************************************************
  *  Describe your method for range search in a kd-tree.
  **********************************************************************/
-
+    The range search is done recursively my
 
 /**********************************************************************
  *  Describe your method for nearest neighbor search in a kd-tree.
@@ -84,7 +101,7 @@ input1M.txt
 
 /**********************************************************************
  *  Describe whatever help (if any) that you received.
- *  Don't include readings, lectures, and d�mat�mar, but do
+ *  Don't include readings, lectures, and d�mat�mar, but do
  *  include any help from people (including course staff, 
  *  classmates, and friends) and attribute them by name.
  **********************************************************************/

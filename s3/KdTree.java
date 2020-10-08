@@ -303,7 +303,7 @@ public class KdTree {
         int direction = current_node.compareTo(point); // If -1 then left, if 1 then right
 
         // Go to the more likely node.
-        if (direction<0){
+        if (direction>0){
             if (current_node.left_child!=null){
                 Node ret_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
                 if (isShorterDistance(current_node, ret_node, point)){
@@ -324,7 +324,7 @@ public class KdTree {
 
         // Check if shortest_distance from query point is longer than distance to opposite rectangle.
         double dist_rect;
-        if (direction<0){
+        if (direction>0){
             dist_rect = current_node.rect_right.distanceSquaredTo(point);
 
         }else {
@@ -333,12 +333,11 @@ public class KdTree {
 
         // If distance is longer, then go to the other direction. If not, go straight to return.
         if (dist_rect<shortest_distance){
-            if(direction<0){
+            if(direction>0){
                 if (current_node.right_child!=null){
                     Node ret_node = recursiveNearestSearch(current_node.right_child, point, shortest_distance, shortest_node);
                     if (isShorterDistance(current_node, ret_node, point)){
                         shortest_node = ret_node;
-                        shortest_distance = shortest_node.point.distanceSquaredTo(point);
                     }
                 }
             }else {
@@ -346,7 +345,6 @@ public class KdTree {
                     Node ret_node = recursiveNearestSearch(current_node.left_child, point, shortest_distance, shortest_node);
                     if (isShorterDistance(current_node, ret_node, point)){
                         shortest_node = ret_node;
-                        shortest_distance = shortest_node.point.distanceSquaredTo(point);
                     }
                 }
             }
@@ -359,18 +357,26 @@ public class KdTree {
      * Test client
      ******************************************************************************/
     public static void main(String[] args) {
-        /*
         // Custom test
-        StdDraw.setCanvasSize(1000, 1000);
+        //StdDraw.setCanvasSize(1000, 1000);
         KdTree test = new KdTree();
         In in = new In();
         int n = in.readInt();
+        Point2D [] points = new Point2D[n];
         for(int i=0; i<n; i++){
             double x_coord = in.readDouble();
             double y_coord = in.readDouble();
             Point2D new_point = new Point2D(x_coord, y_coord);
-            test.insert(new_point);
+            points[i]=new_point;
         }
+        Stopwatch time = new Stopwatch();
+        for (Point2D point: points){
+            test.insert(point);
+        }
+        double total_time = time.elapsedTime();
+        System.out.println("Total insert time for "+n+" points: " + total_time);
+
+        /*
         // Drawing all squares and points in tree
         test.draw();
 
@@ -399,43 +405,6 @@ public class KdTree {
         StdDraw.setPenColor(Color.orange);
         Point2D nearest = test.nearest(neighbor_point);
         nearest.draw();
-         */
-        In in = new In();
-        Out out = new Out();
-        int N = in.readInt(), C = in.readInt(), T = 50;
-        Point2D[] queries = new Point2D[C];
-        KdTree tree = new KdTree();
-        out.printf("Inserting %d points into tree\n", N);
-        for (int i = 0; i < N; i++) {
-            tree.insert(new Point2D(in.readDouble(), in.readDouble()));
-        }
-        out.printf("tree.size(): %d\n", tree.size());
-        out.printf("Testing `nearest` method, querying %d points\n", C);
-
-        for (int i = 0; i < C; i++) {
-            if (i == 249){
-                int x = 10;
-            }
-            queries[i] = new Point2D(in.readDouble(), in.readDouble());
-            out.printf("%s: %s\n", queries[i], tree.nearest(queries[i]));
-        }
-        for (int i = 0; i < T; i++) {
-            for (int j = 0; j < C; j++) {
-                tree.nearest(queries[j]);
-            }
-        }
-        Point2D search_nearest = new Point2D(0.496, 0.171);
-        System.out.println(search_nearest.toString());
-        Point2D my_result = new Point2D(0.492, 0.19);
-        Point2D his_result = new Point2D(0.5, 0.19);
-        System.out.println("My answer: "+search_nearest.distanceTo(my_result));
-        System.out.println("His answer: "+search_nearest.distanceTo(his_result));
-        System.out.println("");
-        search_nearest = new Point2D(0.712, 0.85);
-        System.out.println(search_nearest.toString());
-        my_result = new Point2D(0.714, 0.859);
-        his_result = new Point2D(0.706, 0.857);
-        System.out.println("My answer: "+search_nearest.distanceTo(my_result));
-        System.out.println("His answer: "+search_nearest.distanceTo(his_result));
+        */
     }
 }

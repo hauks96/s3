@@ -3,7 +3,6 @@ package s3;
  *************************************************************************/
 
 import java.awt.*;
-
 import edu.princeton.cs.algs4.*;
 
 class Node {
@@ -26,13 +25,11 @@ class Node {
         inserting / searching in a 2d-tree? Go to the right subtree as specified on the assignment
         page under Search and insert.*/
         if (this.is_x) {
-            if (this.point.x() < that.x()) return -1;
-            else if (this.point.x() == that.x() && this.point.y()==that.y()) return 0;
-            else return 1;
+            if (this.point.x() > that.x()) return 1;
+            else return -1;
         } else {
-            if (this.point.y() < that.y()) return -1;
-            else if (this.point.y() == that.y() && this.point.x()==that.y()) return 0;
-            else return 1;
+            if (this.point.y() > that.y()) return 1;
+            else return -1;
         }
     }
 }
@@ -218,6 +215,8 @@ public class KdTree {
     public void draw() {
         StdDraw.setYscale(-0.2,1.2);
         StdDraw.setXscale(-0.2, 1.2);
+        RectHV square = new RectHV(0, 0, 1, 1);
+        square.draw();
         drawRecursive(this.root);
     }
 
@@ -226,14 +225,25 @@ public class KdTree {
         if (current_node==null) {
             return;
         }
-        StdDraw.setPenColor(Color.blue);
         StdDraw.setPenRadius(0.01);
-        current_node.point.draw();
-
         StdDraw.setPenColor(Color.black);
+        StdDraw.point(current_node.point.x(), current_node.point.y());
         StdDraw.setPenRadius();
-        current_node.rect_left.draw();
-        current_node.rect_right.draw();
+        if (current_node.is_x){
+            StdDraw.setPenColor(Color.red);
+            double max_y = current_node.rect_right.ymax();
+            double min_y = current_node.rect_right.ymin();
+            double x = current_node.point.x();
+            StdDraw.line(x, min_y, x, max_y);
+
+        }
+        else {
+            StdDraw.setPenColor(Color.blue);
+            double max_x = current_node.rect_right.xmax();
+            double min_x = current_node.rect_right.xmin();
+            double y = current_node.point.y();
+            StdDraw.line(min_x, y, max_x, y);
+        }
         drawRecursive(current_node.right_child);
         drawRecursive(current_node.left_child);
     }
@@ -288,12 +298,12 @@ public class KdTree {
         test.draw();
 
         // Checking if point exists
-        Point2D test_point = new Point2D(0.042451, 0.327190);
+        Point2D test_point = new Point2D(0.656218, 0.739517); // Point 281
         System.out.println(test.contains(test_point));
 
         // Checking amount of nodes in tree
         System.out.println(test.size());
-
+        /*
         // Testing range with this test point
         RectHV test_rect = new RectHV(0.15, 0.25, 0.35, 0.6);
         for (Point2D point: test.range(test_rect)){
@@ -304,6 +314,8 @@ public class KdTree {
         StdDraw.setPenColor(Color.red);
         StdDraw.setPenRadius();
         test_rect.draw();
+        */
+
         /*
         In in = new In();
         Out out = new Out();

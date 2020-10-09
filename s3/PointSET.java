@@ -86,8 +86,43 @@ public class PointSET {
     }
 
     public static void main(String[] args) {
-        /*NOTE: Tested this with circle10.txt.
-                 Answer is accepted on Mooshak but it don't think this is a good solution*/
+        // Custom test
+        //StdDraw.setCanvasSize(1000, 1000);
+        PointSET test = new PointSET();
+        In in = new In();
+        int n = in.readInt();
+        int k = in.readInt(); // Nearest neighbour points
+        Point2D [] points = new Point2D[n];
+        for(int i=0; i<n; i++){
+            double x_coord = in.readDouble();
+            double y_coord = in.readDouble();
+            Point2D new_point = new Point2D(x_coord, y_coord);
+            points[i]=new_point;
+        }
+        Stopwatch time = new Stopwatch();
+        for (Point2D point: points){
+            test.insert(point);
+        }
+        double total_time = time.elapsedTime();
+        System.out.println("Total insert time for "+n+" points: " + total_time);
+        System.out.println(test.size());
+
+        Point2D [] nearest_points = new Point2D[k];
+        for (int i=0; i<k; i++){
+            double x_coord = in.readDouble();
+            double y_coord = in.readDouble();
+            Point2D new_point = new Point2D(x_coord, y_coord);
+            nearest_points[i]=new_point;
+        }
+        Stopwatch time_nearest = new Stopwatch();
+        for (Point2D point: nearest_points){
+            test.nearest(point);
+        }
+        total_time = time_nearest.elapsedTime();
+        System.out.println("Total insert time for "+n+" points: " + total_time);
+        System.out.println(test.size());
+
+        /*
         PlotXY plot = new PlotXY("x",  "y", "Point Plot");
         plot.graphTitle("Circle 10.txt");
         PointSET test = new PointSET();
@@ -122,5 +157,7 @@ public class PointSET {
             }
             else System.out.println("No point near " +point.toString());
         }
+
+         */
     }
 }

@@ -71,12 +71,31 @@ Partner section instructor:
  *  Include the memory for all referenced objects (deep memory),
  *  including memory for the nodes, points, and rectangles.
  **********************************************************************/
+    bytes per pointer: 8 bytes
+    bytes per Point2D: 16 bytes overhead + 2x 8Bytes (2 doubles) = 32 bytes
+    bytes per RectHV: 16 bytes overhead + 4x 8bytes (4 doubles) = 48 Bytes
+    bytes per int: 4 bytes
+    bytes per boolean: 1byte
 
-bytes per Point2D: 32 bytes
-bytes per RectHV:
+    One node:
+        * 3x Pointer to nodes
+        * 2x Pointer to RectHV
+        * 1x Pointer to Point2D
+        * 1x boolean
+        * 2x RectHV
+        * 1x Point2D
 
-bytes per KdTree of N points (using tilde notation):   ~
-[include the memory for any referenced Node, Point2D and RectHV objects]
+    Total: 3x8 + 2x8 + 1x8 + 1x1 + 2x48 + 1x32 = 177 Bytes for each node
+
+    KdTree:
+        * 2x Pointer to Point2D
+        * 1x Pointer to root Node
+        * 1x int
+
+    Total: N*(bytes per node) + 1x8 + 1x4 = N*(bytes per node) + 12Bytes
+
+    bytes per KdTree of N points (using tilde notation): ~ N*177Bytes + 12 Bytes
+    [include the memory for any referenced Node, Point2D and RectHV objects]
 
 
 /**********************************************************************
@@ -86,6 +105,24 @@ bytes per KdTree of N points (using tilde notation):   ~
  *  and the timing results. (Do not count the time to generate the N 
  *  points or to read them in from standard input.)
  **********************************************************************/
+    Creation time for 100k: 0.094s
+    Creation time for 200k: 0.208s
+    Creation time for 400k: 0.511s
+    Creation time for 800k: 1.183s
+
+    Insertion time for N points:
+        Order of growth of t: log(1.183/0.511)/log(800000/400000) = 1.21105
+        Constant: 0.511/(400000^1.21105) = 8.39549 * 10^-8
+        T(n) = 8.39549 * 10^-8 * n^(1.21105)
+
+
+    Average insertion time for one point with randomly distributed points: log(N)
+    Total average: N*log(N)
+
+    Worst case insertion time for one point: N
+    Total worst case for N points: N^2
+    This can happen if the points are sorted in a very specific way with x and y respectively where
+    the depth of the tree grows continuously in one direction only.
 
 
 /**********************************************************************
@@ -109,12 +146,13 @@ input1M.txt
 /**********************************************************************
  *  Have you taken (part of) this course before:
  **********************************************************************/
-
+    No
 
 /**********************************************************************
  *  Known bugs / limitations.
  **********************************************************************/
-
+    There are currently no known bugs. However the heap size stops the
+    runtime of the program if the file size is 2m lines.
 
 /**********************************************************************
  *  Describe whatever help (if any) that you received.
@@ -122,26 +160,28 @@ input1M.txt
  *  include any help from people (including course staff, 
  *  classmates, and friends) and attribute them by name.
  **********************************************************************/
-
+    We used piazza but it didn't help.
 
 /**********************************************************************
  *  Describe any serious problems you encountered.                    
  **********************************************************************/
-
+    Reversed the comparator sings in nearest neighbour recursion where
+    we compared "directions<0" instead of "directinos>0" and therefore
+    had a one point inconsistency with the mooshak solution. This took
+    many hours to figure out.
 
 /**********************************************************************
  *  If you worked with partners, assert below that you followed
  *  the protocol as described on the assignment page. Give one
  *  sentence explaining what each of you contributed.
  **********************************************************************/
-
-
-
-
-
+    It was just Hákon and Ægir. We both contributed to everything.
+    However Hákon took the lead on the nearest neighbor search while
+    Ægir did so in the range search.
 
 /**********************************************************************
  *  List any other comments here. Feel free to provide any feedback   
  *  on how much you learned from doing the assignment, and whether    
  *  you enjoyed doing it.                                             
  **********************************************************************/
+    Pain in the ass to debug.

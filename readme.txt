@@ -136,11 +136,14 @@ Partner section instructor:
  *  Repeat the question but with the 2d-tree implementation.
  **********************************************************************/
 
-                     calls to nearest() per second
-                     brute force           2d-tree
-input100K.txt
-input1M.txt
+ calls to nearest() per second
+                                brute force     |      2d-tree
+    input100K.txt :                565          |       786516
+    input1M.txt                     14          |       303951
 
+    Our testing method can be seen in the main method of both KdTree and PointSet
+    With the resulting time we did:
+        total tests/total time = Average tests per second.
 
 
 /**********************************************************************
